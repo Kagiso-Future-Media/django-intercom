@@ -1,6 +1,7 @@
-import logging
+
 import hashlib
 import hmac
+import logging
 import json
 from django.template import Library, Node
 from django.conf import settings
@@ -64,7 +65,7 @@ def intercom_tag(context):
                 # make sure the class has a user_data method
                 if ud_class and hasattr(ud_class, 'user_data'):
                     user_data = ud_class.user_data(request.user)
-            except ImportError, e:
+            except ImportError as e:
                 log.warning("%s couldn't be imported, there was an error during import. skipping. %s" % (INTERCOM_USER_DATA_CLASS, e) )
 
         if INTERCOM_INCLUDE_USERID:
@@ -91,7 +92,7 @@ def intercom_tag(context):
                         custom_data.update(cd_class.custom_data(request.user))
                     else:
                         log.warning("%s doesn't have a custom_data method, skipping." % custom_data_class)
-                except ImportError, e:
+                except ImportError as e:
                     log.warning("%s couldn't be imported, there was an error during import. skipping. %s" % (custom_data_class,e) )
 
             custom_data = json.dumps(custom_data)
@@ -109,7 +110,7 @@ def intercom_tag(context):
                         log.warning("company method of %s doesn't return all of the required dictionary keys (id, name, created_at), skipping." % INTERCOM_COMPANY_DATA_CLASS)
                 else:
                     log.warning("%s doesn't have a company_data method, skipping." % INTERCOM_COMPANY_DATA_CLASS)
-            except ImportError, e:
+            except ImportError as e:
                 log.warning("%s couldn't be imported, there was an error during import. skipping. %s" % (INTERCOM_COMPANY_DATA_CLASS, e) )
 
             company_data = json.dumps(company_data)
@@ -135,4 +136,3 @@ def intercom_tag(context):
 
     # if it is here, it isn't a valid setup, return False to not show the tag.
     return {"INTERCOM_IS_VALID": False}
-
